@@ -1,0 +1,28 @@
+@import "tailwindcss";
+
+.table-head {
+  @apply p-2 border border-gray-400 text-right;
+}
+
+.table-row-right {
+  @apply p-2 border border-gray-400 text-right;
+}
+
+.button {
+  @apply rounded-sm hover:cursor-pointer text-white px-1.5;
+}
+
+.inputBox {
+  @apply border rounded-sm p-1.5;
+}
+
+.common-start-stop-btn {
+  @apply rounded-sm p-1.5  font-medium mr-2;
+}
+.start-btn {
+  @apply bg-green-400 hover:cursor-pointer hover:bg-green-500 disabled:bg-green-300 disabled:hover:bg-green-300 disabled:opacity-50 disabled:hover:cursor-not-allowed;
+}
+
+.stop-btn{
+    @apply  bg-red-400  hover:bg-red-500 hover:cursor-pointer 
+}
