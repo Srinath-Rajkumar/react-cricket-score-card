@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import Button from "./Button";
 
-function Navabar() {
+function Navbar() {
   const [isDialogBoxOpen, setIsDialogBoxOpen] = useState(false);
 
   const dialogRef = useRef(null);
@@ -101,6 +101,6 @@ function Navabar() {
   );
 }
 
-export default Navabar;
+export default Navbar;
 
 // test change

@@ -1,20 +1,7 @@
-
-import BatsManScoreCard from "./components/BatsManScoreCard";
-import BowlerScoreCard from "./components/BowlerScoreCard";
-import LiveScoreCard from "./components/LiveScroeCard";
-import Navabar from "./components/Navbar";
-import OverUpdates from "./components/OverUpdates";
+import MainPage from "./page/mainPage";
 
 function App() {
-  return (
-    <>
-      <Navabar />
-      <LiveScoreCard />
-      <BatsManScoreCard/>
-      <BowlerScoreCard/>
-      <OverUpdates/>
-    </>
-  );
+  return <MainPage />;
 }
 
 export default App;
