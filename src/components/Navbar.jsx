@@ -1,9 +1,9 @@
 import { useState, useRef, useEffect } from "react";
 import Button from "./Button";
 
-function Navbar() {
+function Navbar({ onTeamSelect, onStopMatch }) {
   const [isDialogBoxOpen, setIsDialogBoxOpen] = useState(false);
-
+  const [isButtonDiabled, setButtonDisabled] = useState(false);
   const dialogRef = useRef(null);
 
   useEffect(() => {
@@ -20,7 +20,20 @@ function Navbar() {
       setIsDialogBoxOpen(true);
     } else if (e.target.id === "matchStopBtn") {
       setIsDialogBoxOpen(false);
+      onStopMatch();
+      setButtonDisabled(false);
+    } else if (e.target.id === "team1") {
+      onTeamSelect("CSK");
+      handleTeamSelect();
+    } else if (e.target.id === "team2") {
+      onTeamSelect("MUMBAI");
+      handleTeamSelect();
     }
+  }
+
+  function handleTeamSelect() {
+    setButtonDisabled(true);
+    handleCloseModal();
   }
   function handleCloseModal() {
     setIsDialogBoxOpen(false);
@@ -47,6 +60,7 @@ function Navbar() {
           className="common-start-stop-btn start-btn"
           id="matchStartBtn"
           onClick={handleBtnClick}
+          disabled={isButtonDiabled}
         >
           Start Match
         </Button>
