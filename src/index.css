@@ -8,7 +8,10 @@
   @apply p-2 border border-gray-400 text-right;
 }
 
-.button {
+.button{
+  @apply rounded-sm hover:cursor-pointer text-black px-1.5;
+}
+.button-team {
   @apply rounded-sm hover:cursor-pointer text-white px-1.5;
 }
 

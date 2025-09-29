@@ -1,14 +1,13 @@
-function Button({ id, className, onClick, btnName,disabled = false }) {
+function Button({ id, className, onClick, disabled = false, children }) {
   return (
     <button
       type="button"
-      // className={`common-start-stop-btn ${className}`}
-       className={className}
+      className={className}
       id={id}
       onClick={onClick}
       disabled={disabled}
     >
-      {btnName} Match
+      {children}
     </button>
   );
 }
