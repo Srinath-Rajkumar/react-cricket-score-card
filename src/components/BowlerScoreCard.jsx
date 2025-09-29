@@ -1,9 +1,4 @@
-function BowlerScoreCard({
-  bowlerName = "NA",
-  over = "0",
-  wicket = "0",
-  run = "0",
-}) {
+function BowlerScoreCard({ bowlerName, over, wicket, run }) {
   return (
     <div id="score-table-bowling" className="mx-5 mt-10">
       <div className="flex">

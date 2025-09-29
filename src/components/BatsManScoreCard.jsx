@@ -20,7 +20,7 @@ function BatsManScoreCard({ batsman1, batsman2, currentStriker }) {
           <tbody id="score-card-body">
             <tr id="batman-1">
               {/* <td className="p-2 border border-gray-400">{batsman1.name}</td> */}
-              <td class="p-2 border border-gray-400" id="table-player2-name">
+              <td className="p-2 border border-gray-400" id="table-player2-name">
                 {batsman1.name}
                 <span>{currentStriker === 1 ? "*" : ""}</span>
               </td>

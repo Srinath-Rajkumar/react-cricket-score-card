@@ -16,9 +16,9 @@ function MainPage() {
   const [successMsg, setSuccessMsg] = useState("");
   const [team, setTeam] = useState(null);
   const [isMatchStarted, setIsMatchStarted] = useState(false);
-
   const [currentStriker, setCurrentStriker] = useState(1);
-
+  const [isWaitingForNewBatsman, setIsWaitingForNewBatsman] = useState(false);
+  const [ballResult, setBallResult] = useState("");
   const usedBatsmenRef = useRef([]);
 
   const runRef = useRef(0);
@@ -154,12 +154,27 @@ function MainPage() {
   }, [successMsg, errorMsg]);
 
   function updateRun() {
+    if (isWaitingForNewBatsman) {
+      console.log("Waiting for new batsman... ball not allowed yet.");
+      return;
+    }
+    let isWicket = Math.floor(Math.random() * 5);
+    let strikerId = currentStriker === 1 ? batsman1.id : batsman2.id;
+    console.log("wicket gone:", isWicket);
+    console.log("current striker id:", strikerId);
+
+    if (isWicket === strikerId) {
+      handleWicket();
+      setBallResult("W");
+      ballsRef.current++;
+      //updateOversDisplay();
+      return;
+    }
+
     let randomNumber = Math.floor(Math.random() * 6) + 1;
     console.log("runs :", randomNumber);
     runRef.current += randomNumber;
     // setRun(runRef.current);
-
-    //const isWicket = Math.floor(Math.random() * 5) === 0;
 
     ballsRef.current++;
     console.log("balls :", ballsRef.current);
@@ -183,7 +198,7 @@ function MainPage() {
     let striker = strikerRef.current;
     console.log("current striker:", striker);
     updatePlayerStats(randomNumber);
-
+    updateBowlerStats(randomNumber ,displayOvers);
     if (randomNumber % 2 === 1) {
       changeStrike();
     }
@@ -226,15 +241,85 @@ function MainPage() {
     strikerRef.current = strikerRef.current === 1 ? 2 : 1;
     setCurrentStriker(strikerRef.current);
   }
-  //   function handleWicket(){
-  //     wicketRef.current++;
-  //     setWicket(wicketRef.current);
+  function handleWicket() {
+    wicketRef.current++;
+    setWicket(wicketRef.current);
 
-  //     setBowler(bow=>({
+    if (currentStriker === 1) {
+      setBatsman1((p) => ({ ...p, status: "OUT" }));
+    } else {
+      setBatsman2((p) => ({ ...p, status: "OUT" }));
+    }
 
-  //     })
-  //   }
+    setBowler((p) => ({
+      ...p,
+      wickets: p.wicket + 1,
+      balls: p.balls + 1,
+    }));
 
+    const availableBatsmen = battingTeamRef.current.filter(
+      (player) =>
+        !usedBatsmenRef.current.includes(player.id) &&
+        player.id !== batsman1.id &&
+        player.id !== batsman2.id
+    );
+
+    if (availableBatsmen.length === 0) {
+      handleStopMatch();
+      setErrorMsg("All out! Innings over.");
+      setSuccessMsg("");
+      setIsWaitingForNewBatsman(false);
+      return;
+    }
+    console.log("Used batsmen IDs:", usedBatsmenRef.current);
+    console.log("Available batsmen:", availableBatsmen);
+
+    const newBatsman =
+      availableBatsmen[Math.floor(Math.random() * availableBatsmen.length)];
+
+    setErrorMsg("Wicketttt !!!");
+    setSuccessMsg(`New player: ${newBatsman.playerName}`);
+
+    console.log("New batsman:", newBatsman.playerName);
+
+    setTimeout(() => {
+      if (currentStriker === 1) {
+        setBatsman1({
+          id: newBatsman.id,
+          runs: 0,
+          balls: 0,
+          fours: 0,
+          sixes: 0,
+          name: newBatsman.playerName,
+          status: "batting",
+        });
+      } else {
+        setBatsman2({
+          id: newBatsman.id,
+          runs: 0,
+          balls: 0,
+          fours: 0,
+          sixes: 0,
+          name: newBatsman.playerName,
+          status: "batting",
+        });
+      }
+
+      usedBatsmenRef.current.push(newBatsman.id);
+      console.log("Updated used batsmen IDs:", usedBatsmenRef.current);
+
+      setIsWaitingForNewBatsman(false);
+      setErrorMsg("");
+      setSuccessMsg("");
+    }, 7000);
+  }
+function updateBowlerStats(run,over){
+setBowler((p)=>({
+    ...p,
+    runs:p.runs+run,
+    over:over
+}))
+}
   return (
     <>
       <Navbar onTeamSelect={handleStartMatch} onStopMatch={handleStopMatch} />
@@ -252,7 +337,12 @@ function MainPage() {
         batsman2={batsman2}
         currentStriker={currentStriker}
       />
-      <BowlerScoreCard bowler={bowler} />
+      <BowlerScoreCard
+        bowlerName={bowler.name}
+        over={bowler.over}
+        wicket={bowler.wicket}
+        run={bowler.runs}
+      />
       <OverUpdates />
     </>
   );
