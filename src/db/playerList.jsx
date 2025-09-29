@@ -1,4 +1,4 @@
-const playerList = {
+const PlayerList = {
   team1: [
     {
       id: 1,
@@ -75,4 +75,4 @@ const playerList = {
   ],
 };
 
-export default playerList;
+export default PlayerList;
