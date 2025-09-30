@@ -18,7 +18,6 @@ function MainPage() {
   const [isMatchStarted, setIsMatchStarted] = useState(false);
   const [currentStriker, setCurrentStriker] = useState(1);
   const [isWaitingForNewBatsman, setIsWaitingForNewBatsman] = useState(false);
-  const [ballResult, setBallResult] = useState("");
   const [oversData, setOversData] = useState({});
 
   const usedBatsmenRef = useRef([]);
@@ -90,13 +89,17 @@ function MainPage() {
       let bowlerPlayer = selectRandomPlayer(bowlingTeam);
 
       let currentBowler = bowlerPlayer;
+
       currentBowlerRef.current = currentBowler;
+      bowlerStatsRef.current=currentBowler;
 
       console.log("Selected Team:", teamName);
       console.log("Batsman 1:", batsman1.playerName);
       console.log("Batsman 2:", batsman2.playerName);
       console.log("Bowler:", bowlerPlayer.playerName);
       console.log("Current bowler:", currentBowler);
+      console.log("bowler status :", bowlerStatsRef);
+
       setRun(0);
       setWicket(0);
       setOver(0);
@@ -105,7 +108,7 @@ function MainPage() {
       ballsRef.current = 0;
       wicketRef.current = 0;
       setOversData({});
-
+      //bowlerStatsRef.current = 0;
       setBatsman1({
         id: batsman1.id,
         runs: 0,
@@ -133,6 +136,10 @@ function MainPage() {
         wickets: 0,
         balls: 0,
       });
+
+      createBowler(currentBowler);
+      updateBowlerDisplay();
+
       usedBatsmenRef.current = [batsman1.id, batsman2.id];
       console.log("Used batsmen IDs:", usedBatsmenRef.current);
       intervalRef.current = setInterval(updateRun, 2000);
@@ -179,7 +186,6 @@ function MainPage() {
       let overNumber = ballsInOver === 0 ? overs : overs + 1;
       const displayOvers = `${overs}.${ballsInOver}`;
       setOver(displayOvers);
-      //updateOversDisplay();
       setOversData((data) => {
         const newOversData = { ...data };
         newOversData[overNumber] = [
@@ -190,7 +196,7 @@ function MainPage() {
         console.log("over data :", newOversData);
         return newOversData;
       });
-      updateBowlerStats(ballResult, displayOvers);
+      updateBowlerStats(ballResult);
       return;
     }
 
@@ -222,7 +228,7 @@ function MainPage() {
     // console.log("current striker:", striker);
 
     updatePlayerStats(randomNumber);
-    updateBowlerStats(randomNumber, displayOvers);
+    updateBowlerStats(randomNumber);
 
     setOversData((data) => {
       const newOversData = { ...data };
@@ -250,15 +256,8 @@ function MainPage() {
       }
       currentBowlerRef.current = newBowler;
       // setBowler((p)=>({...p,name:p.name}));
-      setBowler((prev) => ({
-        ...prev,
-        id: newBowler.id,
-        name: newBowler.playerName,
-        runs: 0,
-        wickets: 0,
-        balls: 0,
-        over: 0,
-      }));
+      createBowler(newBowler);
+      updateBowlerDisplay();
       console.log("new bowler :", currentBowlerRef.current);
     }
   }
@@ -367,19 +366,74 @@ function MainPage() {
 
       isWaitingForNewBatsmanRef.current = false;
       setIsWaitingForNewBatsman(false);
-      
+
       setErrorMsg("");
       setSuccessMsg("");
     }, 7000);
   }
 
-  function updateBowlerStats(run, over) {
+  function createBowler(bowler) {
+    console.log("bowler id :", bowler.id);
+    if (!bowlerStatsRef.current[bowler.id]) {
+      bowlerStatsRef.current[bowler.id] = {
+        name: bowler.playerName,
+        runs: 0,
+        balls: 0,
+        overs: 0,
+        wickets: 0,
+      };
+    }
+    console.log("bowler id after if:", bowler.id);
+    return bowlerStatsRef.current[bowler.id];
+  }
+
+  function updateBowlerStats(run) {
     let runs = run === "W" ? 0 : run;
-    setBowler((p) => ({
-      ...p,
-      runs: p.runs + runs,
-      over: over,
-    }));
+    let bowlerId = currentBowlerRef.current.id;
+
+    if (!bowlerStatsRef.current[bowlerId]) {
+      bowlerStatsRef.current[bowlerId] = {
+        name: currentBowlerRef.current.playerName,
+        runs: 0,
+        balls: 0,
+        overs: 0,
+        wickets: 0,
+      };
+    }
+    const stats = bowlerStatsRef.current[bowlerId];
+    stats.runs += runs;
+    stats.balls += 1;
+
+    if (run === "W") {
+      stats.wickets += 1;
+    }
+    const bowlerCompleteOvers = Math.floor(stats.balls / 6);
+    const bowlerBallsInOver = stats.balls % 6;
+    stats.overs = bowlerCompleteOvers + bowlerBallsInOver / 10;
+
+    bowlerStatsRef.current[bowlerId] = stats;
+    console.log("Current bowler stats:", stats);
+    updateBowlerDisplay();
+  }
+
+  function updateBowlerDisplay() {
+    const bowlerId = currentBowlerRef.current.id;
+    const stats = bowlerStatsRef.current[bowlerId];
+    if (!stats) {
+      console.error("No stats found for bowler:", bowlerId);
+      return;
+    }
+    const bowlerCompleteOvers = Math.floor(stats.balls / 6);
+    const bowlerBallsInOver = stats.balls % 6;
+
+    setBowler({
+      id: bowlerId,
+      name: currentBowlerRef.current.playerName,
+      runs: stats.runs,
+      wickets: stats.wickets,
+      balls: stats.balls,
+      over: `${bowlerCompleteOvers}.${bowlerBallsInOver}`,
+    });
   }
   return (
     <>
