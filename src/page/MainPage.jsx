@@ -73,8 +73,8 @@ function MainPage() {
       const bowlingTeam =
         teamValue === 1 ? [...PlayerList.team2] : [...PlayerList.team1];
 
-      console.log("Batting team :", battingTeam[0]);
-      console.log("Batting team :", bowlingTeam[0]);
+      console.log("Batting team player 1:", battingTeam[0]);
+      console.log("bowling team player 1 :", bowlingTeam[0]);
 
       battingTeamRef.current = battingTeam;
       bowlingTeamRef.current = bowlingTeam;
@@ -91,7 +91,7 @@ function MainPage() {
       let currentBowler = bowlerPlayer;
 
       currentBowlerRef.current = currentBowler;
-      bowlerStatsRef.current=currentBowler;
+      bowlerStatsRef.current = currentBowler;
 
       console.log("Selected Team:", teamName);
       console.log("Batsman 1:", batsman1.playerName);
@@ -108,7 +108,7 @@ function MainPage() {
       ballsRef.current = 0;
       wicketRef.current = 0;
       setOversData({});
-      //bowlerStatsRef.current = 0;
+      bowlerStatsRef.current ={};
       setBatsman1({
         id: batsman1.id,
         runs: 0,
@@ -139,6 +139,9 @@ function MainPage() {
 
       createBowler(currentBowler);
       updateBowlerDisplay();
+
+      isWaitingForNewBatsmanRef.current = false;
+      setIsWaitingForNewBatsman(false);
 
       usedBatsmenRef.current = [batsman1.id, batsman2.id];
       console.log("Used batsmen IDs:", usedBatsmenRef.current);
@@ -384,7 +387,6 @@ function MainPage() {
       };
     }
     console.log("bowler id after if:", bowler.id);
-    //return bowlerStatsRef.current[bowler.id];
   }
 
   function updateBowlerStats(run) {
@@ -437,7 +439,11 @@ function MainPage() {
   }
   return (
     <>
-      <Navbar onTeamSelect={handleStartMatch} onStopMatch={handleStopMatch} isMatchStarted={isMatchStarted}/>
+      <Navbar
+        onTeamSelect={handleStartMatch}
+        onStopMatch={handleStopMatch}
+        isMatchStarted={isMatchStarted}
+      />
       <DisplayMsg errorMsg={errorMsg} successMsg={successMsg} />
       <LiveScoreCard
         run={run}
