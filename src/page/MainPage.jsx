@@ -384,7 +384,7 @@ function MainPage() {
       };
     }
     console.log("bowler id after if:", bowler.id);
-    return bowlerStatsRef.current[bowler.id];
+    //return bowlerStatsRef.current[bowler.id];
   }
 
   function updateBowlerStats(run) {
@@ -437,7 +437,7 @@ function MainPage() {
   }
   return (
     <>
-      <Navbar onTeamSelect={handleStartMatch} onStopMatch={handleStopMatch} />
+      <Navbar onTeamSelect={handleStartMatch} onStopMatch={handleStopMatch} isMatchStarted={isMatchStarted}/>
       <DisplayMsg errorMsg={errorMsg} successMsg={successMsg} />
       <LiveScoreCard
         run={run}
