@@ -175,12 +175,14 @@ function MainPage() {
       let overNumber = ballsInOver === 0 ? overs : overs + 1;
       setOver(`${overs}.${ballsInOver}`);
       //updateOversDisplay();
-      setOversData((prev) => {
-        const newOversData = { ...prev };
-        if (!newOversData[overNumber]) {
-          newOversData[overNumber] = [];
-        }
-        newOversData[overNumber].push(ballResult);
+      setOversData((data) => {
+        const newOversData = { ...data };
+        newOversData[overNumber] = [
+          ...(newOversData[overNumber] || []),
+          ballResult,
+        ];
+
+        console.log("over data :", newOversData);
         return newOversData;
       });
       updateBowlerStats(ballResult);
@@ -217,12 +219,14 @@ function MainPage() {
     updatePlayerStats(randomNumber);
     updateBowlerStats(randomNumber, displayOvers);
 
-    setOversData((prev) => {
-      const newOversData = { ...prev };
-      if (!newOversData[overNumber]) {
-        newOversData[overNumber] = [];
-      }
-      newOversData[overNumber].push(randomNumber);
+    setOversData((data) => {
+      const newOversData = { ...data };
+      newOversData[overNumber] = [
+        ...(newOversData[overNumber] || []),
+        randomNumber,
+      ];
+
+      console.log("over data :", newOversData);
       return newOversData;
     });
 
