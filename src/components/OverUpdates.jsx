@@ -1,4 +1,15 @@
-function OverUpdates() {
+function OverUpdates({ oversData }) {
+  function renderBalls(ballsArray, totalBalls = 6) {
+    const tableDes = [];
+    for (let i = 0; i < totalBalls; i++) {
+      tableDes.push(
+        <td key={i} className="p-2 border border-gray-400 text-center">
+          {ballsArray[i] ?? ""}
+        </td>
+      );
+    }
+    return tableDes;
+  }
   return (
     <div id="over-runs-table" className="mx-5 mt-10">
       <h3 className="text-lg font-semibold mb-3">Over update's</h3>
@@ -15,7 +26,14 @@ function OverUpdates() {
               <th className="p-2 border border-gray-400 text-center">Ball 6</th>
             </tr>
           </thead>
-          <tbody id="over-runs-body"></tbody>
+          <tbody>
+            {Object.keys(oversData).map((overNum) => (
+              <tr key={overNum}>
+                <td className="p-2 border border-gray-400">Over {overNum}</td>
+                {renderBalls(oversData[overNum])}
+              </tr>
+            ))}
+          </tbody>
         </table>
       </div>
     </div>

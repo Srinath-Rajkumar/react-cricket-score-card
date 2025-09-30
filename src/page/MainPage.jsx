@@ -19,13 +19,19 @@ function MainPage() {
   const [currentStriker, setCurrentStriker] = useState(1);
   const [isWaitingForNewBatsman, setIsWaitingForNewBatsman] = useState(false);
   const [ballResult, setBallResult] = useState("");
+  const [oversData, setOversData] = useState({});
+
   const usedBatsmenRef = useRef([]);
+  const bowlerStatsRef = useRef({});
 
   const runRef = useRef(0);
   const ballsRef = useRef(0);
   const wicketRef = useRef(0);
   const intervalRef = useRef(null);
   const strikerRef = useRef(1);
+
+  const battingTeamRef = useRef(null);
+  const bowlingTeamRef = useRef(null);
 
   const [batsman1, setBatsman1] = useState({
     id: 0,
@@ -50,14 +56,11 @@ function MainPage() {
   const [bowler, setBowler] = useState({
     id: 0,
     runs: 0,
-    wicket: 0,
+    wickets: 0,
     over: 0,
     name: "NA",
     status: "NA",
   });
-
-  const battingTeamRef = useRef(null);
-  const bowlingTeamRef = useRef(null);
 
   const handleStartMatch = (teamName) => {
     if (!intervalRef.current) {
@@ -97,7 +100,7 @@ function MainPage() {
       runRef.current = 0;
       ballsRef.current = 0;
       wicketRef.current = 0;
-      setCurrentStriker(1);
+      setOversData({});
 
       setBatsman1({
         id: batsman1.id,
@@ -165,9 +168,22 @@ function MainPage() {
 
     if (isWicket === strikerId) {
       handleWicket();
-      setBallResult("W");
+      let ballResult = "W";
       ballsRef.current++;
+      let overs = Math.floor(ballsRef.current / 6);
+      let ballsInOver = ballsRef.current % 6;
+      let overNumber = ballsInOver === 0 ? overs : overs + 1;
+      setOver(`${overs}.${ballsInOver}`);
       //updateOversDisplay();
+      setOversData((prev) => {
+        const newOversData = { ...prev };
+        if (!newOversData[overNumber]) {
+          newOversData[overNumber] = [];
+        }
+        newOversData[overNumber].push(ballResult);
+        return newOversData;
+      });
+      updateBowlerStats(ballResult);
       return;
     }
 
@@ -195,10 +211,24 @@ function MainPage() {
     setOver(displayOvers);
     setRunRate(currentRunRate);
 
-    let striker = strikerRef.current;
-    console.log("current striker:", striker);
+    // let striker = strikerRef.current;
+    // console.log("current striker:", striker);
+
     updatePlayerStats(randomNumber);
-    updateBowlerStats(randomNumber ,displayOvers);
+    updateBowlerStats(randomNumber, displayOvers);
+
+    setOversData((prev) => {
+      const newOversData = { ...prev };
+      if (!newOversData[overNumber]) {
+        newOversData[overNumber] = [];
+      }
+      newOversData[overNumber].push(randomNumber);
+      return newOversData;
+    });
+
+    console.log("overs:", overs);
+    console.log("no of balls in over:", ballsInOver);
+
     if (randomNumber % 2 === 1) {
       changeStrike();
     }
@@ -241,6 +271,7 @@ function MainPage() {
     strikerRef.current = strikerRef.current === 1 ? 2 : 1;
     setCurrentStriker(strikerRef.current);
   }
+
   function handleWicket() {
     wicketRef.current++;
     setWicket(wicketRef.current);
@@ -253,8 +284,7 @@ function MainPage() {
 
     setBowler((p) => ({
       ...p,
-      wickets: p.wicket + 1,
-      balls: p.balls + 1,
+      wickets: p.wickets + 1,
     }));
 
     const availableBatsmen = battingTeamRef.current.filter(
@@ -313,13 +343,15 @@ function MainPage() {
       setSuccessMsg("");
     }, 7000);
   }
-function updateBowlerStats(run,over){
-setBowler((p)=>({
-    ...p,
-    runs:p.runs+run,
-    over:over
-}))
-}
+
+  function updateBowlerStats(run, over) {
+    let runs = run === "W" ? 0 : run;
+    setBowler((p) => ({
+      ...p,
+      runs: p.runs + runs,
+      over: over,
+    }));
+  }
   return (
     <>
       <Navbar onTeamSelect={handleStartMatch} onStopMatch={handleStopMatch} />
@@ -340,10 +372,10 @@ setBowler((p)=>({
       <BowlerScoreCard
         bowlerName={bowler.name}
         over={bowler.over}
-        wicket={bowler.wicket}
+        wicket={bowler.wickets}
         run={bowler.runs}
       />
-      <OverUpdates />
+      <OverUpdates oversData={oversData} />
     </>
   );
 }
