@@ -27,5 +27,5 @@
 }
 
 .stop-btn{
-    @apply  bg-red-400  hover:bg-red-500 hover:cursor-pointer 
+    @apply  bg-red-400  hover:bg-red-500 hover:cursor-pointer disabled:bg-red-500 disabled:hover:bg-red-500 disabled:opacity-50 disabled:hover:cursor-not-allowed;
 }
