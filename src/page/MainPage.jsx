@@ -5,7 +5,7 @@ import Navbar from "../components/Navbar";
 import BowlerScoreCard from "../components/BowlerScoreCard";
 import OverUpdates from "../components/OverUpdates";
 import DisplayMsg from "../components/DisplayMsg";
-import PlayerList from "../db/playerList";
+import PlayerList from "../db/PlayerList.js";
 
 function MainPage() {
   const [run, setRun] = useState(0);
@@ -64,6 +64,7 @@ function MainPage() {
 
   const handleStartMatch = (teamName) => {
     if (!intervalRef.current) {
+      console.warn("---------- Match started !!!---------")
       setTeam(teamName);
       setErrorMsg("");
       setSuccessMsg(`Selected Team ${teamName}!`);
@@ -109,6 +110,8 @@ function MainPage() {
       wicketRef.current = 0;
       setOversData({});
       bowlerStatsRef.current ={};
+      usedBatsmenRef.current = [];
+
       setBatsman1({
         id: batsman1.id,
         runs: 0,
@@ -317,9 +320,7 @@ function MainPage() {
 
     const availableBatsmen = battingTeamRef.current.filter(
       (player) =>
-        !usedBatsmenRef.current.includes(player.id) &&
-        player.id !== batsman1.id &&
-        player.id !== batsman2.id
+        !usedBatsmenRef.current.includes(player.id)
     );
 
     if (availableBatsmen.length === 0) {
@@ -350,7 +351,7 @@ function MainPage() {
           fours: 0,
           sixes: 0,
           name: newBatsman.playerName,
-          status: "batting",
+          status: "Batting",
         });
       } else {
         setBatsman2({
@@ -360,7 +361,7 @@ function MainPage() {
           fours: 0,
           sixes: 0,
           name: newBatsman.playerName,
-          status: "batting",
+          status: "Batting",
         });
       }
 
